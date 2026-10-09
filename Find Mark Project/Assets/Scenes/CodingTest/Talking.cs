@@ -1,5 +1,6 @@
 using UnityEngine;
-using UnityEngine UI;
+using UnityEngine.UI;
+using System.Collections;
 
 public class Talking : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class Talking : MonoBehaviour
     private int index; // For the array to the dialogue 
     public float wordSpeed; // The speed of the text
     public bool playerInRange;// If the player is in range to the npc (true) if not (false)
+    public GameObject contButton;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -19,7 +21,7 @@ public class Talking : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.SPACE) && playerIsRange){
+        if(Input.GetKeyDown(KeyCode.Space) && playerInRange){
             if(dialoguePanel.activeInHierarchy){
                 zeroText();
             
@@ -27,6 +29,11 @@ public class Talking : MonoBehaviour
                 dialoguePanel.SetActive(true);
                 StartCoroutine(Typing());
             }
+        }
+
+        if(dialougeText.text == dialogue[index])
+        {
+            contButton.SetActive(true);
         }
 
         
@@ -41,31 +48,33 @@ public class Talking : MonoBehaviour
     {
         foreach(char letter in dialogue[index].ToCharArray())
         {
-            dialogueText += letter;
+            dialougeText.text += letter;
             yield return new WaitForSeconds(wordSpeed);
         }
     }
     public void Nextline()
     {
+        contButton.SetActive(false);
         if(index < dialogue.Length -1)
         {
             index++;
-            dialogueText.text = "";
+            dialougeText.text = "";
             StartCoroutine(Typing());
         }else{
             zeroText();
         }
     }
     // This method is used to make playerInRange turn to true when the player is near the NPC
-    private void OnTriggerEnter(Collider2d other){
+    private void OnTriggerEnter2D(Collider2D other){
         if(other.CompareTag("Player")){
-            playerIsRange = true;
+            playerInRange = true;
         }
     }
     // This method is uded to make playerInRange turn to false when player is away the NPC
-    private void OnTriggerExit (Collider2d other){
-        if(other.ComapteTag("Player")){
+    private void OnTriggerExit2D (Collider2D other){
+        if(other.CompareTag("Player")){
             playerInRange = false;
+            zeroText();
         }
     }
 }
