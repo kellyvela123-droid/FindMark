@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class Talking : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class Talking : MonoBehaviour
     public float wordSpeed; // The speed of the text
     public bool playerInRange;// If the player is in range to the npc (true) if not (false)
     public GameObject contButton;
+    public PlayerMovementJK movement;
+    private Coroutine typingCoroutine;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,28 +24,37 @@ public class Talking : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space) && playerInRange){
-            if(dialoguePanel.activeInHierarchy){
-                zeroText();
-            
-            }else{
-                dialoguePanel.SetActive(true);
-                StartCoroutine(Typing());
+        if(Input.GetKeyDown(KeyCode.Space) && playerInRange){ // If Player is in range and press space it will active the dialogue box
+            if (!dialoguePanel.activeInHierarchy)// If the dialogue panel is not active
+            {
+                dialoguePanel.SetActive(true); // Turns on the dialogue
+                movement.enabled = false; // disable the movement by disabling the movement script
+                typingCoroutine = StartCoroutine(Typing()); // Type out the dialogue
+                contButton.SetActive(true);
+
             }
+           
         }
 
-        if(dialougeText.text == dialogue[index])
+        if(dialougeText.text == dialogue[index]) // If the all the text is completed
         {
-            contButton.SetActive(true);
+            contButton.SetActive(true); // Active the continue button
         }
+      /*  else
+        {
+
+            contButton.SetActive(false); 
+        } */
 
         
     }
     public void zeroText()
+
     {
         dialougeText.text = "";
         index = 0;
         dialoguePanel.SetActive(false);
+        movement.enabled = true;
     }
     IEnumerator Typing()
     {
@@ -51,15 +63,23 @@ public class Talking : MonoBehaviour
             dialougeText.text += letter;
             yield return new WaitForSeconds(wordSpeed);
         }
+   
     }
     public void Nextline()
     {
-        contButton.SetActive(false);
-        if(index < dialogue.Length -1)
+        //contButton.SetActive(false);
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+
+
+        if (index < dialogue.Length -1)
         {
             index++;
             dialougeText.text = "";
-            StartCoroutine(Typing());
+            typingCoroutine = StartCoroutine(Typing());
         }else{
             zeroText();
         }

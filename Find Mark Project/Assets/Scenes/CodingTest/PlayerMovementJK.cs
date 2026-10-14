@@ -15,7 +15,12 @@ public class PlayerMovementJK : MonoBehaviour
 
     // Update is called once per frame
     void Update()
+
     {
+        if (!enabled)
+        {
+            return;
+        } 
         movement = Vector2.zero; // Keeping that shit a zero, meaning player doesn't move
         // WASD or Arrow keys, Lets the player move type shit
         if(Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed){
@@ -37,6 +42,7 @@ public class PlayerMovementJK : MonoBehaviour
     }
     void FixedUpdate()
     {
+       
         
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime); // MovePosition moves the player kinematrics movement(Doesn't rely on gravity like that frfr).
                                                                                    // rb.position tell us where the player is located
