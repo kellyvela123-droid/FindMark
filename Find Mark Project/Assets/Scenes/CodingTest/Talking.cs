@@ -14,6 +14,7 @@ public class Talking : MonoBehaviour
     public GameObject contButton;
     public PlayerMovementJK movement;
     private Coroutine typingCoroutine;
+    public GameObject interactButton;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -24,13 +25,21 @@ public class Talking : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (playerInRange && !dialoguePanel.activeInHierarchy)
+        {
+            interactButton.SetActive(true);
+        } else if (!playerInRange)
+        {
+            interactButton.SetActive(false);
+        }
         if(Input.GetKeyDown(KeyCode.Space) && playerInRange){ // If Player is in range and press space it will active the dialogue box
             if (!dialoguePanel.activeInHierarchy)// If the dialogue panel is not active
             {
                 dialoguePanel.SetActive(true); // Turns on the dialogue
                 movement.enabled = false; // disable the movement by disabling the movement script
                 typingCoroutine = StartCoroutine(Typing()); // Type out the dialogue
-                contButton.SetActive(true);
+                contButton.SetActive(true); //Turns on the continue button 
+                interactButton.SetActive(false); // Turns off the interact button above the npc while it's talking
 
             }
            
