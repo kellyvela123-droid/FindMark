@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using Unity.VisualScripting;
 
-public class Talking : MonoBehaviour
+public class MarkTalking : MonoBehaviour
 {
     public GameObject dialoguePanel;
     public Text dialougeText;
@@ -15,11 +15,12 @@ public class Talking : MonoBehaviour
     public PlayerMovementJK movement;
     private Coroutine typingCoroutine;
     public GameObject interactButton;
+    public GameObject NextLevelButton;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -28,11 +29,13 @@ public class Talking : MonoBehaviour
         if (playerInRange && !dialoguePanel.activeInHierarchy)
         {
             interactButton.SetActive(true);
-        } else if (!playerInRange)
+        }
+        else if (!playerInRange)
         {
             interactButton.SetActive(false);
         }
-        if(Input.GetKeyDown(KeyCode.Space) && playerInRange){ // If Player is in range and press space it will active the dialogue box
+        if (Input.GetKeyDown(KeyCode.Space) && playerInRange)
+        { // If Player is in range and press space it will active the dialogue box
             if (!dialoguePanel.activeInHierarchy)// If the dialogue panel is not active
             {
                 dialoguePanel.SetActive(true); // Turns on the dialogue
@@ -42,20 +45,20 @@ public class Talking : MonoBehaviour
                 interactButton.SetActive(false); // Turns off the interact button above the npc while it's talking
 
             }
-           
+
         }
 
-        if(dialougeText.text == dialogue[index]) // If the all the text is completed
+       /* if (dialougeText.text == dialogue[index]) // If the all the text is completed
         {
             contButton.SetActive(true); // Active the continue button
         }
-      /*  else
-        {
+          else
+          {
 
-            contButton.SetActive(false); 
-        } */
+              contButton.SetActive(false); 
+          } */
 
-        
+
     }
     public void zeroText()
 
@@ -67,12 +70,12 @@ public class Talking : MonoBehaviour
     }
     IEnumerator Typing()
     {
-        foreach(char letter in dialogue[index].ToCharArray())
+        foreach (char letter in dialogue[index].ToCharArray())
         {
             dialougeText.text += letter;
             yield return new WaitForSeconds(wordSpeed);
         }
-   
+
     }
     public void Nextline()
     {
@@ -84,24 +87,39 @@ public class Talking : MonoBehaviour
         }
 
 
-        if (index < dialogue.Length -1)
+        if (index < dialogue.Length - 2)
         {
             index++;
             dialougeText.text = "";
             typingCoroutine = StartCoroutine(Typing());
-        }else{
+
+        }
+        else if (index == dialogue.Length - 2)
+        {
+            contButton.SetActive(false);
+            index++;
+            dialougeText.text = "";
+            typingCoroutine = StartCoroutine(Typing());
+            NextLevelButton.SetActive(true);
+        }
+        else
+        {
             zeroText();
         }
     }
     // This method is used to make playerInRange turn to true when the player is near the NPC
-    private void OnTriggerEnter2D(Collider2D other){
-        if(other.CompareTag("Player")){
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
             playerInRange = true;
         }
     }
     // This method is uded to make playerInRange turn to false when player is away the NPC
-    private void OnTriggerExit2D (Collider2D other){
-        if(other.CompareTag("Player")){
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
             playerInRange = false;
             zeroText();
         }
